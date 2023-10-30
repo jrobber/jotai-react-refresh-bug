@@ -1,10 +1,26 @@
+
+
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    env: {
+      test: {
+        presets: [['@babel/preset-env', { loose: true }]],
+      },
+    },
+    presets: ['babel-preset-expo', '@babel/preset-typescript'],
     plugins: [
-      // Required for expo-router
+      [
+        'module-resolver',
+        {
+          root: ['./src'],
+          extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.ts', '.tsx', '.json']
+        },
+      ],
+      '@babel/plugin-proposal-export-namespace-from',
       'expo-router/babel',
+      'transform-inline-environment-variables',
+      'jotai/babel/plugin-react-refresh',
     ],
   };
 };

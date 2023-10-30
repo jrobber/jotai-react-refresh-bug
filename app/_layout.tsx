@@ -4,6 +4,24 @@ import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
+import { useAtomValue } from 'jotai'
+import { Provider as JotaiProvider } from 'jotai'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { atomWithStorage, createJSONStorage } from 'jotai/utils'
+import { Platform } from 'react-native'
+
+const storageTokenAtom = atomWithStorage<string>('TEST_TOKEN', null)
+
+
+const isIos = Platform.OS === 'ios'
+const isAndroid = Platform.OS === 'android'
+console.log('Platform.OS', Platform.OS)
+let storage
+if (isIos || isAndroid) {
+  console.log('CREATING STORAGE')
+  storage = createJSONStorage(() => AsyncStorage)
+}
+console.log('🚀  storage:', storage)
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -44,6 +62,17 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+
+  return (
+    <JotaiProvider>
+    <AppInner />
+  </JotaiProvider>
+  );
+}
+
+function AppInner() {
+  const colorScheme = useColorScheme();
+  const chatStatus = useAtomValue(storageTokenAtom)
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
